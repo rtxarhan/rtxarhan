@@ -5,6 +5,10 @@ import { YoutubeLogo } from "@phosphor-icons/react";
 import { IMAGES, NAV_LINKS, SOCIAL_LINKS, scrollToSection } from "@/lib/site-config.ts";
 import type { SectionId } from "@/lib/site-config.ts";
 
+function isSectionId(id: string): id is SectionId {
+  return NAV_LINKS.some((link) => link.id === id);
+}
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
@@ -17,10 +21,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", updateScrollState);
   }, []);
 
+  // Lock page scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     const sections = NAV_LINKS.flatMap(({ id }) => {
       const section = document.getElementById(id);
-      return section ? [{ id, section }] : [];
+      return section ? [section] : [];
     });
     if (sections.length === 0) return;
 
@@ -30,14 +42,14 @@ export default function Navbar() {
           .filter((entry) => entry.isIntersecting)
           .sort((first, second) => second.intersectionRatio - first.intersectionRatio);
         const currentId = visibleSections[0]?.target.id;
-        if (currentId && NAV_LINKS.some((link) => link.id === currentId)) {
-          setActiveSection(currentId as SectionId);
+        if (currentId && isSectionId(currentId)) {
+          setActiveSection(currentId);
         }
       },
       { rootMargin: "-20% 0px -60% 0px", threshold: [0, 0.2, 0.5, 0.8] },
     );
 
-    sections.forEach(({ section }) => observer.observe(section));
+    sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
 
@@ -58,7 +70,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => navigateToSection("home")}
-          className="flex shrink-0 cursor-pointer items-center gap-2.5 text-left"
+          className="relative z-50 flex shrink-0 cursor-pointer items-center gap-2.5 text-left"
           aria-label="RTX ARHAN home"
         >
           <img
@@ -85,14 +97,12 @@ export default function Navbar() {
               }`}
             >
               {link.label}
-              <motion.span
-                layoutId="navbar-active-underline"
-                className={`absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-primary via-secondary to-accent shadow-[0_0_10px_oklch(0.63_0.25_25/75%)] ${
+              <span
+                className={`absolute inset-x-0 -bottom-0.5 h-0.5 rounded-full bg-gradient-to-r from-primary via-secondary to-accent shadow-[0_0_10px_oklch(0.63_0.25_25/75%)] transition-opacity duration-200 ${
                   activeSection === link.id
                     ? "opacity-100"
                     : "opacity-0 group-hover:opacity-100"
                 }`}
-                transition={{ duration: 0.22, ease: "easeOut" }}
               />
             </button>
           ))}

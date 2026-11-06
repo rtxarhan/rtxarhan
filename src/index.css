@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "./shadcn.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -129,6 +128,7 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
     color-scheme: dark;
   }
 

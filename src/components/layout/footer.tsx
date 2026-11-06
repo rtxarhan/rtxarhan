@@ -10,7 +10,7 @@ const SOCIALS = [
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-border/60 bg-black/70">
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-primary via-secondary to-transparent shadow-[0_0_18px_oklch(0.63_0.25_25/65%)]" />
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_18px_oklch(0.63_0.25_25/65%)]" />
       <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 sm:px-8 md:grid-cols-2 lg:grid-cols-[1.25fr_1fr_1fr] lg:gap-14 lg:px-10 lg:py-16">
         <div className="flex flex-col items-start">
           <button
