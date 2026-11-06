@@ -50,7 +50,7 @@ export default function VideosSection() {
                     <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_0_32px_oklch(0.63_0.25_25/65%)] transition-transform duration-300 group-hover:scale-110 sm:h-[4.5rem] sm:w-[4.5rem]">
                       <span
                         aria-hidden="true"
-                        className="absolute -inset-2 rounded-full border border-primary/70 animate-pulse"
+                        className="absolute -inset-2 animate-pulse rounded-full border border-primary/70"
                       />
                       <Play className="ml-1 h-6 w-6 fill-current sm:h-7 sm:w-7" />
                     </span>
@@ -82,11 +82,11 @@ export default function VideosSection() {
             href={SOCIAL_LINKS.youtube}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex cursor-pointer items-center gap-3 rounded-md border border-primary/60 bg-primary px-6 py-4 font-display text-sm font-bold uppercase tracking-[0.12em] text-primary-foreground shadow-[0_0_24px_oklch(0.63_0.25_25/35%)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_oklch(0.63_0.25_25/60%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background sm:px-8"
+            className="group inline-flex cursor-pointer items-center gap-3 rounded-md border border-primary/60 bg-primary px-6 py-4 text-center font-display text-xs font-bold uppercase tracking-[0.12em] text-primary-foreground shadow-[0_0_24px_oklch(0.63_0.25_25/35%)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_36px_oklch(0.63_0.25_25/60%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background sm:px-8 sm:text-sm"
           >
-            <YoutubeLogo weight="fill" className="h-5 w-5" />
+            <YoutubeLogo weight="fill" className="h-5 w-5 shrink-0" />
             View All Videos on YouTube
-            <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
           </a>
         </div>
       </div>
