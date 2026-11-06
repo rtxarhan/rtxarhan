@@ -23,6 +23,13 @@ export const SOCIAL_LINKS = {
   discord: "https://discord.gg/rtxarhan",
 } as const;
 
+// Handles shown on the social cards. Update together with SOCIAL_LINKS.
+export const SOCIAL_HANDLES = {
+  youtube: "@RTXARHAN",
+  instagram: "@rtxarhan",
+  discord: "RTX ARHAN Squad",
+} as const;
+
 export const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -73,7 +80,10 @@ export const FEATURED_VIDEOS: FeaturedVideo[] = [
   },
 ];
 
+export type StatKey = "subscribers" | "views" | "videos" | "streams";
+
 export type Stat = {
+  key: StatKey;
   label: string;
   value: number;
   suffix: string;
@@ -81,10 +91,10 @@ export type Stat = {
 
 // Edit these numbers to update the animated counters.
 export const STATS: Stat[] = [
-  { label: "YouTube Subscribers", value: 50000, suffix: "+" },
-  { label: "Total Views", value: 2500000, suffix: "+" },
-  { label: "Total Videos", value: 350, suffix: "+" },
-  { label: "Live Streams", value: 120, suffix: "+" },
+  { key: "subscribers", label: "YouTube Subscribers", value: 50000, suffix: "+" },
+  { key: "views", label: "Total Views", value: 2500000, suffix: "+" },
+  { key: "videos", label: "Total Videos", value: 350, suffix: "+" },
+  { key: "streams", label: "Live Streams", value: 120, suffix: "+" },
 ];
 
 export function scrollToSection(id: SectionId) {

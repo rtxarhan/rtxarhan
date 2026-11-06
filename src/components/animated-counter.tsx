@@ -1,22 +1,13 @@
 import { animate, useInView } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils.ts";
+import { formatCompactNumber } from "@/lib/format.ts";
 
 type AnimatedCounterProps = {
   value: number;
   suffix?: string;
   className?: string;
 };
-
-function formatCompactNumber(value: number): string {
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
-  }
-  if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
-  }
-  return Math.round(value).toLocaleString("en-US");
-}
 
 export default function AnimatedCounter({ value, suffix = "", className }: AnimatedCounterProps) {
   const counterRef = useRef<HTMLSpanElement>(null);
