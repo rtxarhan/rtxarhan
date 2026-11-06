@@ -3,7 +3,7 @@ import { ArrowUpRight, Eye, Play } from "lucide-react";
 import { YoutubeLogo } from "@phosphor-icons/react";
 import NeonBorderCard from "@/components/neon-border-card.tsx";
 import SectionHeading from "@/components/section-heading.tsx";
-import { FEATURED_VIDEOS, SOCIAL_LINKS } from "@/lib/site-config.ts";
+import { FEATURED_VIDEOS, SOCIAL_LINKS, getVideoThumbnail } from "@/lib/site-config.ts";
 
 export default function VideosSection() {
   return (
@@ -26,13 +26,13 @@ export default function VideosSection() {
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.55, delay: index * 0.12, ease: "easeOut" }}
+              transition={{ duration: 0.55, delay: (index % 3) * 0.12, ease: "easeOut" }}
               className="group cursor-pointer rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
             >
               <NeonBorderCard className="h-full" innerClassName="flex h-full flex-col overflow-hidden">
                 <div className="relative aspect-video shrink-0 overflow-hidden rounded-t-[calc(1rem-1.5px)]">
                   <img
-                    src={video.thumbnail}
+                    src={getVideoThumbnail(video)}
                     alt=""
                     loading="lazy"
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
