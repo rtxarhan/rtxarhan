@@ -1,11 +1,23 @@
 import { motion } from "motion/react";
 import { Mouse, Play } from "lucide-react";
-import { IMAGES, scrollToSection } from "@/lib/site-config.ts";
+import { IMAGES, STATS, scrollToSection } from "@/lib/site-config.ts";
+import type { StatKey } from "@/lib/site-config.ts";
+import { formatCompactNumber } from "@/lib/format.ts";
 
 const TITLE_DELAY = 1.8;
 const TITLE_RTX = Array.from("RTX");
 const TITLE_ARHAN = Array.from("ARHAN");
-const QUICK_STATS = ["50K+ Subs", "2.5M+ Views", "350+ Videos"];
+
+// Short labels for the hero badges. Numbers come from STATS in site-config.ts.
+const HERO_LABELS: Partial<Record<StatKey, string>> = {
+  subscribers: "Subs",
+  views: "Views",
+  videos: "Videos",
+};
+const QUICK_STATS = STATS.flatMap((stat) => {
+  const label = HERO_LABELS[stat.key];
+  return label ? [{ value: `${formatCompactNumber(stat.value)}${stat.suffix}`, label }] : [];
+});
 
 export default function HeroSection() {
   return (
@@ -208,11 +220,10 @@ export default function HeroSection() {
         >
           {QUICK_STATS.map((stat) => (
             <div
-              key={stat}
+              key={stat.label}
               className="rounded-full border border-foreground/10 bg-background/45 px-3.5 py-2 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-foreground/75 backdrop-blur-md sm:px-4 sm:text-xs"
             >
-              <span className="text-primary">{stat.split(" ")[0]}</span>{" "}
-              {stat.split(" ").slice(1).join(" ")}
+              <span className="text-primary">{stat.value}</span> {stat.label}
             </div>
           ))}
         </motion.div>
