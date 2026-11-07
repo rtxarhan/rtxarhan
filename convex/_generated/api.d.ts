@@ -8,6 +8,8 @@
  * @module
  */
 
+import type * as shared_siteContent from "../shared/siteContent.js";
+import type * as siteContent from "../siteContent.js";
 import type * as users from "../users.js";
 
 import type {
@@ -17,6 +19,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  "shared/siteContent": typeof shared_siteContent;
+  siteContent: typeof siteContent;
   users: typeof users;
 }>;
 
