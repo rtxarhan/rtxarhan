@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useConvexAuth, useQuery } from "convex/react";
 import { Link } from "react-router-dom";
-import { LogIn, LogOut, ShieldAlert } from "lucide-react";
+import { LogIn, LogOut, ShieldAlert, TriangleAlert } from "lucide-react";
 import { api } from "@/convex/_generated/api.js";
 import { ADMIN_EMAIL } from "@/convex/shared/siteContent.ts";
 import { Button } from "@/components/ui/button.tsx";
@@ -9,6 +10,15 @@ import { useAuth } from "@/hooks/use-auth.ts";
 import { DEFAULT_CONTENT } from "@/lib/default-content.ts";
 import { IMAGES } from "@/lib/site-config.ts";
 import AdminEditor from "./_components/admin-editor.tsx";
+
+// Sign-in and the database only work when the hosting provides these values.
+const MISSING_CONFIG = [
+  ["VITE_HERCULES_OIDC_AUTHORITY", import.meta.env.VITE_HERCULES_OIDC_AUTHORITY],
+  ["VITE_HERCULES_OIDC_CLIENT_ID", import.meta.env.VITE_HERCULES_OIDC_CLIENT_ID],
+  ["VITE_CONVEX_URL", import.meta.env.VITE_CONVEX_URL],
+]
+  .filter(([, value]) => !value)
+  .map(([name]) => name);
 
 function CenteredCard({ children }: { children: React.ReactNode }) {
   return (
@@ -33,10 +43,63 @@ function LoadingScreen() {
   );
 }
 
+function ErrorBox({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mt-5 flex w-full items-start gap-2 rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-left text-sm text-foreground">
+      <TriangleAlert className="mt-0.5 size-4 shrink-0 text-destructive" />
+      <div className="min-w-0 break-words">{children}</div>
+    </div>
+  );
+}
+
 function AdminContent({ onSignOut }: { onSignOut: () => void }) {
   const stored = useQuery(api.siteContent.get, {});
   if (stored === undefined) return <LoadingScreen />;
   return <AdminEditor initial={stored ?? DEFAULT_CONTENT} onSignOut={onSignOut} />;
+}
+
+function SignInCard() {
+  const auth = useAuth();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    setError(null);
+    setPending(true);
+    try {
+      await auth.signin({ returnTo: "/admin" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      setPending(false);
+    }
+  };
+
+  return (
+    <CenteredCard>
+      <h1 className="pt-6 font-display text-2xl font-black uppercase tracking-wider">
+        Admin <span className="text-primary">Panel</span>
+      </h1>
+      <p className="pt-3 text-base text-muted-foreground">Sign in to edit your website content.</p>
+      {MISSING_CONFIG.length > 0 && (
+        <ErrorBox>
+          Sign-in is not set up on this hosting. Missing settings: <span className="font-mono">{MISSING_CONFIG.join(", ")}</span>
+        </ErrorBox>
+      )}
+      {error && <ErrorBox>Sign-in failed: {error}</ErrorBox>}
+      <Button
+        size="lg"
+        className="mt-6 w-full cursor-pointer"
+        disabled={pending}
+        onClick={() => void handleSignIn()}
+      >
+        {pending ? <Spinner /> : <LogIn />}
+        {pending ? "Opening sign in..." : "Sign in"}
+      </Button>
+      <Link to="/" className="cursor-pointer pt-4 text-sm text-muted-foreground transition-colors hover:text-primary">
+        Back to website
+      </Link>
+    </CenteredCard>
+  );
 }
 
 export default function AdminPage() {
@@ -45,27 +108,9 @@ export default function AdminPage() {
   const isAdmin = useQuery(api.siteContent.isAdmin, isAuthenticated ? {} : "skip");
   const signOut = () => void auth.signout();
 
-  if (auth.isLoading || isLoading) return <LoadingScreen />;
-
-  if (!auth.isAuthenticated) {
-    return (
-      <CenteredCard>
-        <h1 className="pt-6 font-display text-2xl font-black uppercase tracking-wider">
-          Admin <span className="text-primary">Panel</span>
-        </h1>
-        <p className="pt-3 text-base text-muted-foreground">Sign in to edit your website content.</p>
-        <Button size="lg" className="mt-6 w-full cursor-pointer" onClick={() => void auth.signin({ returnTo: "/admin" })}>
-          <LogIn />
-          Sign in
-        </Button>
-        <Link to="/" className="cursor-pointer pt-4 text-sm text-muted-foreground transition-colors hover:text-primary">
-          Back to website
-        </Link>
-      </CenteredCard>
-    );
-  }
-
-  if (isAdmin === undefined) return <LoadingScreen />;
+  if (auth.isLoading) return <LoadingScreen />;
+  if (!auth.isAuthenticated) return <SignInCard />;
+  if (isLoading || isAdmin === undefined) return <LoadingScreen />;
 
   if (!isAdmin) {
     return (
