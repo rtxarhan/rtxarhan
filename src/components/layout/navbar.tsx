@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { YoutubeLogo } from "@phosphor-icons/react";
-import { IMAGES, NAV_LINKS, SOCIAL_LINKS, scrollToSection } from "@/lib/site-config.ts";
+import { NAV_LINKS, scrollToSection } from "@/lib/site-config.ts";
 import type { SectionId } from "@/lib/site-config.ts";
+import { useSiteContent } from "@/hooks/use-site-content.ts";
 
 function isSectionId(id: string): id is SectionId {
   return NAV_LINKS.some((link) => link.id === id);
 }
 
 export default function Navbar() {
+  const { images, social, hero } = useSiteContent();
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -71,15 +73,15 @@ export default function Navbar() {
           type="button"
           onClick={() => navigateToSection("home")}
           className="relative z-50 flex shrink-0 cursor-pointer items-center gap-2.5 text-left"
-          aria-label="RTX ARHAN home"
+          aria-label="Home"
         >
           <img
-            src={IMAGES.logo}
+            src={images.logo}
             alt=""
             className="h-10 w-10 rounded-xl object-cover shadow-[0_0_18px_oklch(0.63_0.25_25/35%)] sm:h-12 sm:w-12"
           />
-          <span className="font-display text-sm font-black tracking-[0.08em] text-foreground sm:text-base">
-            RTX <span className="text-primary">ARHAN</span>
+          <span className="font-display text-sm font-black uppercase tracking-[0.08em] text-foreground sm:text-base">
+            {hero.titleTop} <span className="text-primary">{hero.titleBottom}</span>
           </span>
         </button>
 
@@ -110,13 +112,13 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
-            href={SOCIAL_LINKS.youtube}
+            href={social.youtube.url}
             target="_blank"
             rel="noopener noreferrer"
             className="hidden cursor-pointer items-center gap-2 rounded-full bg-primary px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_oklch(0.63_0.25_25/40%)] transition-all hover:shadow-[0_0_28px_oklch(0.63_0.25_25/70%)] sm:inline-flex"
           >
             <YoutubeLogo size={18} weight="fill" />
-            Subscribe
+            {social.youtube.action}
           </a>
           <button
             type="button"
@@ -162,14 +164,14 @@ export default function Navbar() {
                 </motion.button>
               ))}
               <a
-                href={SOCIAL_LINKS.youtube}
+                href={social.youtube.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setIsMenuOpen(false)}
                 className="mt-7 inline-flex cursor-pointer items-center gap-2 rounded-full bg-primary px-6 py-3 font-mono text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_24px_oklch(0.63_0.25_25/45%)]"
               >
                 <YoutubeLogo size={20} weight="fill" />
-                Subscribe on YouTube
+                {social.youtube.action} on YouTube
               </a>
             </nav>
           </motion.div>

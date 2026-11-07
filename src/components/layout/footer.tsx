@@ -1,13 +1,17 @@
+import { Link } from "react-router-dom";
 import { DiscordLogo, InstagramLogo, YoutubeLogo } from "@phosphor-icons/react";
-import { IMAGES, NAV_LINKS, SOCIAL_LINKS, CONTACT_EMAIL, scrollToSection } from "@/lib/site-config.ts";
-
-const SOCIALS = [
-  { name: "YouTube", href: SOCIAL_LINKS.youtube, Icon: YoutubeLogo },
-  { name: "Instagram", href: SOCIAL_LINKS.instagram, Icon: InstagramLogo },
-  { name: "Discord", href: SOCIAL_LINKS.discord, Icon: DiscordLogo },
-];
+import { NAV_LINKS, scrollToSection } from "@/lib/site-config.ts";
+import { useSiteContent } from "@/hooks/use-site-content.ts";
 
 export default function Footer() {
+  const { images, social, contact, footer, hero } = useSiteContent();
+  const brand = `${hero.titleTop} ${hero.titleBottom}`.trim();
+  const socials = [
+    { name: "YouTube", href: social.youtube.url, Icon: YoutubeLogo },
+    { name: "Instagram", href: social.instagram.url, Icon: InstagramLogo },
+    { name: "Discord", href: social.discord.url, Icon: DiscordLogo },
+  ];
+
   return (
     <footer className="relative overflow-hidden border-t border-border/60 bg-black/70">
       <div className="h-px w-full bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_18px_oklch(0.63_0.25_25/65%)]" />
@@ -17,22 +21,20 @@ export default function Footer() {
             type="button"
             onClick={() => scrollToSection("home")}
             className="inline-flex cursor-pointer items-center gap-3 text-left"
-            aria-label="RTX ARHAN home"
+            aria-label={`${brand} home`}
           >
             <img
-              src={IMAGES.logo}
+              src={images.logo}
               alt=""
               className="h-12 w-12 rounded-xl object-cover shadow-[0_0_18px_oklch(0.63_0.25_25/40%)]"
             />
-            <span className="font-display text-base font-black tracking-[0.1em] text-foreground">
-              RTX <span className="text-primary">ARHAN</span>
+            <span className="font-display text-base font-black uppercase tracking-[0.1em] text-foreground">
+              {hero.titleTop} <span className="text-primary">{hero.titleBottom}</span>
             </span>
           </button>
-          <p className="max-w-sm pt-5 font-sans text-lg text-muted-foreground">
-            {"Gaming Is Not Just A Game, It's A Passion."}
-          </p>
+          <p className="max-w-sm pt-5 font-sans text-lg text-muted-foreground">{footer.tagline}</p>
           <div className="flex items-center gap-3 pt-6">
-            {SOCIALS.map(({ name, href, Icon }) => (
+            {socials.map(({ name, href, Icon }) => (
               <a
                 key={name}
                 href={href}
@@ -69,21 +71,25 @@ export default function Footer() {
           <h2 className="font-mono text-xs font-bold uppercase tracking-[0.24em] text-accent">
             Get In Touch
           </h2>
-          <p className="pt-5 font-sans text-base text-muted-foreground">
-            For collaborations, gaming projects, and community questions.
-          </p>
+          <p className="pt-5 font-sans text-base text-muted-foreground">{footer.contactText}</p>
           <a
-            href={`mailto:${CONTACT_EMAIL}`}
+            href={`mailto:${contact.email}`}
             className="mt-4 inline-flex cursor-pointer break-all font-mono text-sm text-primary transition-colors hover:text-accent"
           >
-            {CONTACT_EMAIL}
+            {contact.email}
           </a>
         </div>
       </div>
-      <div className="border-t border-border/60 px-5 py-5 text-center sm:px-8">
+      <div className="flex flex-col items-center justify-center gap-2 border-t border-border/60 px-5 py-5 text-center sm:flex-row sm:gap-4 sm:px-8">
         <p className="font-mono text-[0.68rem] tracking-[0.08em] text-muted-foreground sm:text-xs">
-          Copyright © {new Date().getFullYear()} RTX ARHAN. All Rights Reserved.
+          Copyright © {new Date().getFullYear()} {brand}. All Rights Reserved.
         </p>
+        <Link
+          to="/admin"
+          className="cursor-pointer font-mono text-[0.68rem] tracking-[0.08em] text-muted-foreground/50 transition-colors hover:text-primary sm:text-xs"
+        >
+          Admin
+        </Link>
       </div>
     </footer>
   );

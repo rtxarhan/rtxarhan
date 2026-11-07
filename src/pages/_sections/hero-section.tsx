@@ -1,25 +1,28 @@
 import { motion } from "motion/react";
 import { Mouse, Play } from "lucide-react";
-import { IMAGES, STATS, scrollToSection } from "@/lib/site-config.ts";
+import { scrollToSection } from "@/lib/site-config.ts";
 import type { StatKey } from "@/lib/site-config.ts";
 import { formatCompactNumber } from "@/lib/format.ts";
+import { useSiteContent } from "@/hooks/use-site-content.ts";
 
 const TITLE_DELAY = 1.8;
-const TITLE_RTX = Array.from("RTX");
-const TITLE_ARHAN = Array.from("ARHAN");
 
-// Short labels for the hero badges. Numbers come from STATS in site-config.ts.
+// Short labels for the hero badges. Numbers come from the Stats section content.
 const HERO_LABELS: Partial<Record<StatKey, string>> = {
   subscribers: "Subs",
   views: "Views",
   videos: "Videos",
 };
-const QUICK_STATS = STATS.flatMap((stat) => {
-  const label = HERO_LABELS[stat.key];
-  return label ? [{ value: `${formatCompactNumber(stat.value)}${stat.suffix}`, label }] : [];
-});
 
 export default function HeroSection() {
+  const { hero, images, stats } = useSiteContent();
+  const titleTop = Array.from(hero.titleTop);
+  const titleBottom = Array.from(hero.titleBottom);
+  const quickStats = stats.items.flatMap((stat) => {
+    const label = HERO_LABELS[stat.key];
+    return label ? [{ value: `${formatCompactNumber(stat.value)}${stat.suffix}`, label }] : [];
+  });
+
   return (
     <section
       id="home"
@@ -27,7 +30,7 @@ export default function HeroSection() {
     >
       <div aria-hidden="true" className="absolute inset-0 -z-20 overflow-hidden">
         <img
-          src={IMAGES.heroBg}
+          src={images.heroBg}
           alt=""
           className="absolute inset-0 h-full w-full object-cover object-center opacity-35"
         />
@@ -80,16 +83,16 @@ export default function HeroSection() {
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_12px_oklch(0.63_0.25_25/90%)]" />
             </span>
             <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-foreground/80 sm:text-xs sm:tracking-[0.24em]">
-              {"// CONTENT CREATOR • YOUTUBE GAMER"}
+              {hero.badge}
             </span>
           </motion.div>
 
           <h1 className="pt-7 font-display text-[clamp(3rem,12vw,8rem)] font-black uppercase leading-[0.88] tracking-[-0.055em] sm:pt-8 lg:pt-9">
-            <span className="sr-only">RTX ARHAN</span>
+            <span className="sr-only">{`${hero.titleTop} ${hero.titleBottom}`}</span>
             <span aria-hidden="true" className="block whitespace-nowrap">
-              {TITLE_RTX.map((letter, index) => (
+              {titleTop.map((letter, index) => (
                 <motion.span
-                  key={`rtx-${letter}`}
+                  key={`top-${index}-${letter}`}
                   initial={{ opacity: 0, y: 42, rotateX: -70, filter: "blur(8px)" }}
                   animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
                   transition={{
@@ -99,14 +102,14 @@ export default function HeroSection() {
                   }}
                   className="inline-block bg-gradient-to-br from-primary via-primary/80 to-primary bg-clip-text pr-[0.025em] text-transparent [text-shadow:0_0_34px_oklch(0.63_0.25_25/55%)]"
                 >
-                  {letter}
+                  {letter === " " ? "\u00A0" : letter}
                 </motion.span>
               ))}
             </span>
             <span aria-hidden="true" className="block whitespace-nowrap text-foreground">
-              {TITLE_ARHAN.map((letter, index) => (
+              {titleBottom.map((letter, index) => (
                 <motion.span
-                  key={`arhan-${index}`}
+                  key={`bottom-${index}-${letter}`}
                   initial={{ opacity: 0, y: 42, rotateX: -70, filter: "blur(8px)" }}
                   animate={{ opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)" }}
                   transition={{
@@ -116,7 +119,7 @@ export default function HeroSection() {
                   }}
                   className="inline-block pr-[0.025em]"
                 >
-                  {letter}
+                  {letter === " " ? "\u00A0" : letter}
                 </motion.span>
               ))}
             </span>
@@ -128,7 +131,7 @@ export default function HeroSection() {
             transition={{ duration: 0.65, delay: TITLE_DELAY + 0.95, ease: "easeOut" }}
             className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text pt-6 font-display text-lg font-bold tracking-wide text-transparent sm:text-2xl lg:text-[1.7rem]"
           >
-            {"Welcome to My Gaming Universe 🎮"}
+            {hero.tagline}
           </motion.p>
 
           <motion.p
@@ -137,7 +140,7 @@ export default function HeroSection() {
             transition={{ duration: 0.65, delay: TITLE_DELAY + 1.1, ease: "easeOut" }}
             className="max-w-xl pt-4 font-sans text-base leading-relaxed text-foreground/70 sm:text-lg lg:text-xl"
           >
-            {"I'm RTX ARHAN, a passionate gaming content creator. Join me on my journey through epic gameplay, intense battles, exciting challenges and unforgettable gaming moments."}
+            {hero.description}
           </motion.p>
 
           <motion.div
@@ -152,14 +155,14 @@ export default function HeroSection() {
               className="group inline-flex cursor-pointer items-center justify-center gap-3 rounded-md bg-primary px-6 py-3.5 font-display text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground shadow-[0_0_24px_oklch(0.63_0.25_25/38%)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_34px_oklch(0.63_0.25_25/65%)] sm:px-7 sm:text-sm"
             >
               <Play className="h-4 w-4 fill-current transition-transform duration-300 group-hover:scale-110" />
-              Watch My Videos
+              {hero.primaryCta}
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("contact")}
               className="cursor-pointer rounded-md border border-secondary/60 bg-background/30 px-6 py-3.5 font-display text-xs font-bold uppercase tracking-[0.14em] text-foreground backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-secondary hover:bg-secondary/10 hover:shadow-[0_0_22px_oklch(0.55_0.25_300/30%)] sm:px-7 sm:text-sm"
             >
-              Contact Me
+              {hero.secondaryCta}
             </button>
           </motion.div>
         </div>
@@ -203,8 +206,8 @@ export default function HeroSection() {
             className="relative z-10 flex h-[66%] w-[66%] items-center justify-center overflow-hidden rounded-full border border-foreground/15 bg-background/35 p-3 shadow-[0_0_58px_oklch(0.63_0.25_25/22%)] backdrop-blur-sm sm:p-5"
           >
             <img
-              src={IMAGES.logo}
-              alt="RTX ARHAN logo"
+              src={images.logo}
+              alt={`${hero.titleTop} ${hero.titleBottom} logo`}
               className="h-full w-full rounded-full object-contain drop-shadow-[0_0_30px_oklch(0.63_0.25_25/38%)]"
             />
           </motion.div>
@@ -218,7 +221,7 @@ export default function HeroSection() {
           transition={{ duration: 0.6, delay: TITLE_DELAY + 1.45, ease: "easeOut" }}
           className="flex flex-wrap items-center justify-center gap-2.5 sm:justify-start sm:gap-3"
         >
-          {QUICK_STATS.map((stat) => (
+          {quickStats.map((stat) => (
             <div
               key={stat.label}
               className="rounded-full border border-foreground/10 bg-background/45 px-3.5 py-2 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-foreground/75 backdrop-blur-md sm:px-4 sm:text-xs"

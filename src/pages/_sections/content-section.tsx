@@ -2,46 +2,11 @@ import { motion } from "motion/react";
 import { ArrowUpRight, Gamepad2, Laugh, Radio, Target, Trophy } from "lucide-react";
 import NeonBorderCard from "@/components/neon-border-card.tsx";
 import SectionHeading from "@/components/section-heading.tsx";
-import { SOCIAL_LINKS } from "@/lib/site-config.ts";
+import { useSiteContent } from "@/hooks/use-site-content.ts";
 
-const contentTypes = [
-  {
-    number: "01",
-    title: "Gameplay",
-    description: "High-stakes matches, clutch plays, and the moments that make every win count.",
-    icon: Gamepad2,
-    color: "primary",
-  },
-  {
-    number: "02",
-    title: "Highlights",
-    description: "The best plays, biggest surprises, and unforgettable rounds—cut straight to the action.",
-    icon: Trophy,
-    color: "secondary",
-  },
-  {
-    number: "03",
-    title: "Funny Moments",
-    description: "Unexpected chaos, squad banter, and gaming moments you have to see to believe.",
-    icon: Laugh,
-    color: "accent",
-  },
-  {
-    number: "04",
-    title: "Challenges",
-    description: "Wild rules, bold goals, and fresh ways to put gaming skills to the test.",
-    icon: Target,
-    color: "primary",
-  },
-  {
-    number: "05",
-    title: "Live Streams",
-    description: "Jump into the action live and be part of the next big community moment.",
-    icon: Radio,
-    color: "secondary",
-    live: true,
-  },
-] as const;
+// Icons and colors repeat in order when more cards are added from the admin panel.
+const CARD_ICONS = [Gamepad2, Trophy, Laugh, Target, Radio];
+const CARD_COLORS = ["primary", "secondary", "accent", "primary", "secondary"] as const;
 
 const colorStyles = {
   primary: {
@@ -68,26 +33,28 @@ const colorStyles = {
 };
 
 export default function ContentSection() {
+  const { content, social } = useSiteContent();
+
   return (
     <section id="content" className="relative overflow-hidden py-24 md:py-32">
       <div aria-hidden="true" className="pointer-events-none absolute -left-40 top-1/3 size-96 rounded-full bg-primary/10 blur-[130px]" />
       <div className="mx-auto max-w-7xl px-4">
-        <SectionHeading eyebrow="What I Create" title="MY GAMING CONTENT" />
+        <SectionHeading eyebrow={content.eyebrow} title={content.title} />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-6 lg:gap-6">
-          {contentTypes.map((item, index) => {
-            const { number, title, description, icon: Icon, color } = item;
-            const live = "live" in item;
-            const styles = colorStyles[color];
+          {content.items.map((item, index) => {
+            const number = String(index + 1).padStart(2, "0");
+            const Icon = CARD_ICONS[index % CARD_ICONS.length];
+            const styles = colorStyles[CARD_COLORS[index % CARD_COLORS.length]];
             const spanClass = index < 2 ? "lg:col-span-3" : "lg:col-span-2";
 
             return (
               <motion.a
-                key={number}
-                href={SOCIAL_LINKS.youtube}
+                key={`${number}-${item.title}`}
+                href={social.youtube.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Explore ${title} on YouTube`}
+                aria-label={`Explore ${item.title} on YouTube`}
                 initial={{ opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
@@ -104,7 +71,7 @@ export default function ContentSection() {
                     <div className={`flex size-14 items-center justify-center rounded-xl ring-1 transition-all duration-300 group-hover:rotate-6 ${styles.icon}`}>
                       <Icon aria-hidden="true" className="size-7" strokeWidth={1.8} />
                     </div>
-                    {live ? (
+                    {item.live ? (
                       <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 font-mono text-[10px] font-bold tracking-[0.2em] text-primary">
                         <span className="size-1.5 animate-pulse rounded-full bg-primary shadow-[0_0_10px_oklch(0.63_0.25_25)]" />
                         LIVE
@@ -117,10 +84,10 @@ export default function ContentSection() {
                       CONTENT / {number}
                     </p>
                     <h3 className="pt-2 font-display text-xl font-bold uppercase tracking-wide text-foreground sm:text-2xl">
-                      {title}
+                      {item.title}
                     </h3>
                     <p className="pt-2 font-sans text-base leading-relaxed text-muted-foreground">
-                      {description}
+                      {item.description}
                     </p>
                     <div className={`flex items-center gap-2 pt-5 font-mono text-xs font-bold uppercase tracking-[0.18em] ${styles.explore}`}>
                       Explore
